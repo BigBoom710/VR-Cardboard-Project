@@ -2,38 +2,51 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Galleria del Vento VR</title>
+    <title>Galleria del Vento VR - Fix</title>
+    
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+
+    <script>
+      if (THREE.MathUtils) {
+        THREE.Math = {
+          generateUUID: THREE.MathUtils.generateUUID
+        };
+      }
+    </script>
+
     <script src="https://unpkg.com/aframe-particle-system-component@1.0.x/dist/aframe-particle-system-component.min.js"></script>
   </head>
   <body>
-    <a-scene library="inspector" background="color: #050505">
+    <a-scene background="color: #050505">
       
       <a-assets>
         <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
       </a-assets>
 
-      <a-light type="ambient" intensity="0.3"></a-light>
+      <a-light type="ambient" intensity="0.4"></a-light>
       <a-light type="directional" position="1 5 2" intensity="0.8"></a-light>
       <a-light type="point" position="0 0.1 -4" color="#00ffff" intensity="2" distance="5"></a-light>
 
       <a-entity position="0 0.8 -4">
+        
         <a-entity 
           gltf-model="#auto" 
           rotation="-90 0 0" 
           scale="0.05 0.05 0.05">
         </a-entity>
         
-        <a-entity id="vento"
-          position="0 0 2" 
-          particle-system="preset: dust; color: #00ffff,#ffffff; particleCount: 5000; size: 0.1; velocityValue: 0 0 -20; accelerationValue: 0 0 -10; opacity: 0.5">
+        <a-entity 
+          particle-system="preset: snow; color: #00ffff; particleCount: 3000; size: 0.05; velocityValue: 0 0 15; velocitySpread: 2 2 0; accelerationValue: 0 0 10; positionSpread: 3 2 0; rotationAngle: 0">
         </a-entity>
       </a-entity>
 
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="50" height="50" color="#111"></a-plane>
+      <a-grid position="0 0 0" cellColor="#111" sectionColor="#222"></a-grid>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="50" height="50" color="#050505"></a-plane>
 
       <a-entity camera look-controls position="0 1.6 0"></a-entity>
 
     </a-scene>
   </body>
 </html>
+</html>
+
