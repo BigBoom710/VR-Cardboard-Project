@@ -2,24 +2,30 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>AVBO VR Experience</title>
+    <title>Garage VR - Macchina Raddrizzata</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   </head>
   <body>
     <a-scene>
       <a-assets>
-        <a-asset-item id="modello-auto" src="macchina_test.glb"></a-asset-item>
+        <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
       </a-assets>
 
-      <a-entity 
-        gltf-model="#modello-auto" 
-        position="0 1.5 -3" 
-        scale="1 1 1"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear">
+      <a-entity id="pivot-macchina" position="0 1 -4">
+        
+        <a-entity 
+          gltf-model="#auto" 
+          rotation="-90 0 0" 
+          scale="0.05 0.05 0.05"
+          animation="property: rotation; to: -90 360 0; loop: true; dur: 15000; easing: linear">
+        </a-entity>
+
       </a-entity>
 
-      <a-sky color="#ECECEC"></a-sky> <a-plane position="0 0 -4" rotation="-90 0 0" width="20" height="20" color="#333"></a-plane> <a-light type="ambient" intensity="0.7"></a-light>
-      <a-light type="directional" position="-1 2 1" intensity="0.5"></a-light>
+      <a-sky color="#222"></a-sky> <a-grid></a-grid> <a-light type="ambient" intensity="0.8"></a-light>
+      <a-light type="directional" position="1 4 2" intensity="1"></a-light>
+      <a-light type="directional" position="-1 2 -2" intensity="0.5" color="#afc9ff"></a-light>
+
     </a-scene>
   </body>
 </html>
