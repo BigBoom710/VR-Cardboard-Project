@@ -14,31 +14,26 @@
       }
     });
 
-    // ─── Gaze panel ─────────────────────────────────────────────────────────
-    // Strategia: il pannello parte con scale 0,0,0 (invisibile ma nel DOM).
-    // Al gaze-enter → scala a 1,1,1 con lerp. Al gaze-leave → scala a 0.
-    // Così <a-text> e tutti i figli scompaiono senza dover toccare i materiali.
-    AFRAME.registerComponent('gaze-panel', {
-      schema: { duration: { type: 'number', default: 300 } },
-
+    // ─── Pannello con titolo fisso + body in fade ────────────────────────────
+    // Il titolo è sempre visibile (elemento separato fuori dal gruppo animato).
+    // Il "body" (sfondo + bordi + testo) parte a scale=0 e appare al gaze.
+    AFRAME.registerComponent('gaze-body', {
+      schema: { duration: { type: 'number', default: 350 } },
       init: function () {
-        this._scale  = 0;
-        this._target = 0;
+        this._s = 0;
+        this._t = 0;
         this.el.object3D.scale.set(0, 0, 0);
-
-        this.el.addEventListener('mouseenter', () => { this._target = 1; });
-        this.el.addEventListener('mouseleave', () => { this._target = 0; });
+        this.el.addEventListener('mouseenter', () => { this._t = 1; });
+        this.el.addEventListener('mouseleave', () => { this._t = 0; });
       },
-
       tick: function (time, delta) {
-        if (Math.abs(this._scale - this._target) < 0.005) {
-          this._scale = this._target;
-          this.el.object3D.scale.setScalar(this._scale);
+        if (Math.abs(this._s - this._t) < 0.005) {
+          this._s = this._t;
+          this.el.object3D.scale.setScalar(this._s);
           return;
         }
-        const step = delta / this.data.duration;
-        this._scale += (this._target - this._scale) * Math.min(step * 4, 1);
-        this.el.object3D.scale.setScalar(this._scale);
+        this._s += (this._t - this._s) * Math.min((delta / this.data.duration) * 5, 1);
+        this.el.object3D.scale.setScalar(this._s);
       }
     });
 
@@ -52,7 +47,6 @@
       renderer="antialias: true; colorManagement: true"
     >
 
-      <!-- ═══ ASSETS ══════════════════════════════════════════════════════════ -->
       <a-assets>
         <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
       </a-assets>
@@ -87,19 +81,17 @@
           material="emissive:#4466ff; emissiveIntensity:1; opacity:0.85; transparent:true"
           position="0 0.06 0" rotation="90 0 0">
         </a-torus>
-
         <!--
-          Dal GLB: asse X = lunghezza (225u), Y = larghezza (65u), Z = altezza (48u)
-          → la macchina è "sdraiata" con il tetto su +Z
-          rotation="-90 90 0":  prima -90° su X (mette in piedi), poi 90° su Y (gira il frontale)
-          scale=0.009: 225 * 0.009 ≈ 2m
-          position Z +0.98: compensa il centro geometrico sfasato (~110u su X → 0.99m)
+          Dopo rotation="-90 90 0":
+            GLB-X (lunghezza 225u, center=-110) → world -Z → position Z = +0.99
+            GLB-Y (larghezza 65u,  center=0)    → world  X → position X = 0
+            GLB-Z (altezza  48u,   center=22)   → world  Y → position Y = +0.20 sopra disco
         -->
         <a-entity
           gltf-model="#auto"
           rotation="-90 90 0"
           scale="0.009 0.009 0.009"
-          position="0 0.18 0.98">
+          position="0 0.20 0.99">
         </a-entity>
       </a-entity>
 
@@ -107,102 +99,114 @@
       <a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0">
         <a-cursor
           fuse="false"
-          raycaster="objects: .gaze-target; far: 12"
+          raycaster="objects: .gaze-target; far: 14"
           geometry="primitive: ring; radiusInner: 0.012; radiusOuter: 0.018"
           material="color: #ffffff; shader: flat; opacity: 0.7">
         </a-cursor>
       </a-entity>
 
-      <!-- ═══ PANNELLI GAZE ════════════════════════════════════════════════════
-           Ogni pannello: 
-           - <a-entity gaze-panel> → controlla lo scale (0↔1) dell'intero gruppo
-           - <a-plane class="gaze-target"> → il raycaster lo intercetta anche a scale=0
-             perché il raycaster usa l'object3D originale; però a scale=0 il plane 
-             non è visibile né cliccabile → usiamo un invisible trigger plane fisso 
-             SEPARATO dal pannello animato.
+      <!-- ═══════════════════════════════════════════════════════════════════════
+           PANNELLI — struttura per ciascuno:
+           
+           [WRAPPER] — posizione e rotazione nel mondo
+             [TITOLO] — sempre visibile, è il "punto di ancoraggio" visivo
+             [TRIGGER] — piano invisibile, intercetta il gaze, comanda il body
+             [BODY gaze-body] — parte a scale=0; appare al gaze
+               - sfondo semitrasparente
+               - bordi colorati
+               - testo descrizione
       ══════════════════════════════════════════════════════════════════════════ -->
 
-      <!-- ── TRIGGER invisibili (sempre presenti, intercettano il gaze) ───────
-           Stessa posizione/rotazione dei pannelli, ma sono solo piani trasparenti
-           che fanno da "sensore". Attivano il pannello via JS. -->
+      <!-- ── PANNELLO 1 — davanti-sinistra, BLU ────────────────────────────── -->
+      <a-entity position="-3.2 1.6 -3.2" rotation="0 38 0">
 
-      <!-- trigger 1 -->
-      <a-plane id="trigger1" class="gaze-target" position="-3 1.6 -3" rotation="0 35 0"
-        width="1.6" height="1.1" material="opacity:0; transparent:true; side:double">
-      </a-plane>
-      <!-- trigger 2 -->
-      <a-plane id="trigger2" class="gaze-target" position="3 1.6 -3" rotation="0 -35 0"
-        width="1.6" height="1.1" material="opacity:0; transparent:true; side:double">
-      </a-plane>
-      <!-- trigger 3 -->
-      <a-plane id="trigger3" class="gaze-target" position="-3.5 1.6 -5.5" rotation="0 75 0"
-        width="1.6" height="1.1" material="opacity:0; transparent:true; side:double">
-      </a-plane>
-      <!-- trigger 4 -->
-      <a-plane id="trigger4" class="gaze-target" position="3.5 1.6 -5.5" rotation="0 -75 0"
-        width="1.6" height="1.1" material="opacity:0; transparent:true; side:double">
-      </a-plane>
+        <!-- Titolo — sempre visibile, grande e leggibile -->
+        <a-text
+          value="TITOLO 1"
+          align="center"
+          color="#4488ff"
+          width="2.2"
+          position="0 0.55 0"
+          wrap-count="18">
+        </a-text>
+        <!-- Lineetta sotto il titolo come indicatore -->
+        <a-box position="0 0.34 0" width="0.8" height="0.012" depth="0.005"
+          color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.5">
+        </a-box>
 
-      <!-- ── PANNELLI ANIMATI (partono a scale=0) ──────────────────────────── -->
+        <!-- Trigger invisibile (intercetta gaze) -->
+        <a-plane id="t1" class="gaze-target" width="1.8" height="1.2" position="0 0 0"
+          material="opacity:0; transparent:true; side:double">
+        </a-plane>
 
-      <!-- PANNELLO 1 — BLU -->
-      <a-entity id="panel1" gaze-panel position="-3 1.6 -3" rotation="0 35 0">
-        <a-plane width="1.5" height="0.95" material="color:#060614; opacity:0.92; transparent:true; side:double"></a-plane>
-        <a-box position=" 0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="-0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0  0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0 -0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-text value="TITOLO 1" align="center" color="#6688ff" width="1.3" position="0 0.3 0.01" wrap-count="22"></a-text>
-        <a-text value="Inserisci qui il tuo testo." align="center" color="#aabbff" width="1.2" position="0 -0.05 0.01" wrap-count="30"></a-text>
+        <!-- Body animato -->
+        <a-entity id="b1" gaze-body>
+          <a-plane width="1.6" height="0.75" position="0 -0.1 -0.005"
+            material="color:#05091f; opacity:0.93; transparent:true; side:double">
+          </a-plane>
+          <!-- bordi -->
+          <a-box position=" 0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="-0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="0  0.265 0"   width="1.6"   height="0.025" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="0 -0.465 0"   width="1.6"   height="0.025" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
+          <!-- testo corpo -->
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#aabbff" width="1.4" position="0 -0.1 0.01" wrap-count="28"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- PANNELLO 2 — ARANCIO -->
-      <a-entity id="panel2" gaze-panel position="3 1.6 -3" rotation="0 -35 0">
-        <a-plane width="1.5" height="0.95" material="color:#140a00; opacity:0.92; transparent:true; side:double"></a-plane>
-        <a-box position=" 0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="-0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0  0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0 -0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-text value="TITOLO 2" align="center" color="#ff8833" width="1.3" position="0 0.3 0.01" wrap-count="22"></a-text>
-        <a-text value="Inserisci qui il tuo testo." align="center" color="#ffddaa" width="1.2" position="0 -0.05 0.01" wrap-count="30"></a-text>
+      <!-- ── PANNELLO 2 — davanti-destra, ARANCIO ───────────────────────────── -->
+      <a-entity position="3.2 1.6 -3.2" rotation="0 -38 0">
+        <a-text value="TITOLO 2" align="center" color="#ff7722" width="2.2" position="0 0.55 0" wrap-count="18"></a-text>
+        <a-box position="0 0.34 0" width="0.8" height="0.012" depth="0.005" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.5"></a-box>
+        <a-plane id="t2" class="gaze-target" width="1.8" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
+        <a-entity id="b2" gaze-body>
+          <a-plane width="1.6" height="0.75" position="0 -0.1 -0.005" material="color:#1a0800; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
+          <a-box position="-0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
+          <a-box position="0  0.265 0"   width="1.6"   height="0.025" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
+          <a-box position="0 -0.465 0"   width="1.6"   height="0.025" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#ffddaa" width="1.4" position="0 -0.1 0.01" wrap-count="28"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- PANNELLO 3 — VERDE -->
-      <a-entity id="panel3" gaze-panel position="-3.5 1.6 -5.5" rotation="0 75 0">
-        <a-plane width="1.5" height="0.95" material="color:#00100a; opacity:0.92; transparent:true; side:double"></a-plane>
-        <a-box position=" 0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="-0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0  0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0 -0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-text value="TITOLO 3" align="center" color="#00ffaa" width="1.3" position="0 0.3 0.01" wrap-count="22"></a-text>
-        <a-text value="Inserisci qui il tuo testo." align="center" color="#ccffe8" width="1.2" position="0 -0.05 0.01" wrap-count="30"></a-text>
+      <!-- ── PANNELLO 3 — laterale sinistra, VERDE ──────────────────────────── -->
+      <a-entity position="-3.8 1.6 -5.5" rotation="0 78 0">
+        <a-text value="TITOLO 3" align="center" color="#00ffaa" width="2.2" position="0 0.55 0" wrap-count="18"></a-text>
+        <a-box position="0 0.34 0" width="0.8" height="0.012" depth="0.005" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.5"></a-box>
+        <a-plane id="t3" class="gaze-target" width="1.8" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
+        <a-entity id="b3" gaze-body>
+          <a-plane width="1.6" height="0.75" position="0 -0.1 -0.005" material="color:#001a0d; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
+          <a-box position="-0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
+          <a-box position="0  0.265 0"   width="1.6"   height="0.025" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
+          <a-box position="0 -0.465 0"   width="1.6"   height="0.025" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#ccffe8" width="1.4" position="0 -0.1 0.01" wrap-count="28"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- PANNELLO 4 — VIOLA -->
-      <a-entity id="panel4" gaze-panel position="3.5 1.6 -5.5" rotation="0 -75 0">
-        <a-plane width="1.5" height="0.95" material="color:#0d0014; opacity:0.92; transparent:true; side:double"></a-plane>
-        <a-box position=" 0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="-0.735 0 0.005" width="0.03" height="0.95" depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0  0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-box position="0 -0.46 0.005"  width="1.5" height="0.03"  depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.2; transparent:true; opacity:0.9"></a-box>
-        <a-text value="TITOLO 4" align="center" color="#cc44ff" width="1.3" position="0 0.3 0.01" wrap-count="22"></a-text>
-        <a-text value="Inserisci qui il tuo testo." align="center" color="#eeccff" width="1.2" position="0 -0.05 0.01" wrap-count="30"></a-text>
+      <!-- ── PANNELLO 4 — laterale destra, VIOLA ────────────────────────────── -->
+      <a-entity position="3.8 1.6 -5.5" rotation="0 -78 0">
+        <a-text value="TITOLO 4" align="center" color="#cc44ff" width="2.2" position="0 0.55 0" wrap-count="18"></a-text>
+        <a-box position="0 0.34 0" width="0.8" height="0.012" depth="0.005" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.5"></a-box>
+        <a-plane id="t4" class="gaze-target" width="1.8" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
+        <a-entity id="b4" gaze-body>
+          <a-plane width="1.6" height="0.75" position="0 -0.1 -0.005" material="color:#0d0020; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="-0.79 -0.1 0" width="0.025" height="0.75" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="0  0.265 0"   width="1.6"   height="0.025" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
+          <a-box position="0 -0.465 0"   width="1.6"   height="0.025" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#eeccff" width="1.4" position="0 -0.1 0.01" wrap-count="28"></a-text>
+        </a-entity>
       </a-entity>
 
-      <!-- ── Script: collega i trigger ai pannelli ───────────────────────────── -->
+      <!-- Collega trigger → body via JS -->
       <script>
-        document.addEventListener('DOMContentLoaded', () => {
-          const pairs = [
-            ['trigger1', 'panel1'],
-            ['trigger2', 'panel2'],
-            ['trigger3', 'panel3'],
-            ['trigger4', 'panel4'],
-          ];
-          pairs.forEach(([tid, pid]) => {
-            const trigger = document.getElementById(tid);
-            const panel   = document.getElementById(pid);
-            trigger.addEventListener('mouseenter', () => panel.components['gaze-panel']._target = 1);
-            trigger.addEventListener('mouseleave', () => panel.components['gaze-panel']._target = 0);
+        window.addEventListener('load', () => {
+          [['t1','b1'],['t2','b2'],['t3','b3'],['t4','b4']].forEach(([tid, bid]) => {
+            const tr = document.getElementById(tid);
+            const bd = document.getElementById(bid);
+            tr.addEventListener('mouseenter', () => { if(bd.components['gaze-body']) bd.components['gaze-body']._t = 1; });
+            tr.addEventListener('mouseleave', () => { if(bd.components['gaze-body']) bd.components['gaze-body']._t = 0; });
           });
         });
       </script>
