@@ -2,218 +2,269 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Galleria del Vento VR</title>
+    <title>Car Showcase VR</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script>
-      // ─── Componente particelle vento custom (puro Three.js, no dipendenze) ───
-      AFRAME.registerComponent('wind-particles', {
-        schema: {
-          count:  { type: 'int',    default: 8000 },
-          color:  { type: 'color',  default: '#00ffff' },
-          speed:  { type: 'number', default: 6 },
-          spread: { type: 'number', default: 3 },
-          length: { type: 'number', default: 12 },
-          size:   { type: 'number', default: 0.015 }
-        },
 
-        init: function () {
-          const d = this.data;
-          const positions = new Float32Array(d.count * 3);
-          this._velocities = new Float32Array(d.count);
+    // ─── Piattaforma rotante ─────────────────────────────────────────────────
+    AFRAME.registerComponent('rotate-platform', {
+      schema: { speed: { type: 'number', default: 0.3 } },
+      tick: function (time, delta) {
+        this.el.object3D.rotation.y += THREE.MathUtils.degToRad(this.data.speed) * (delta / 1000) * 60;
+      }
+    });
 
-          for (let i = 0; i < d.count; i++) {
-            positions[i * 3]     = (Math.random() - 0.5) * d.spread * 2;
-            positions[i * 3 + 1] = (Math.random() - 0.5) * d.spread;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * d.length;
-            this._velocities[i]  = 0.5 + Math.random() * 1.5;
-          }
+    // ─── Gaze hover: appare quando guardi, scompare quando non guardi ────────
+    AFRAME.registerComponent('gaze-panel', {
+      schema: {
+        fadeDuration: { type: 'number', default: 300 }
+      },
+      init: function () {
+        this._visible = false;
+        this._opacity = 0;
+        this._target  = 0;
 
-          const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        // Imposta opacità iniziale a 0
+        this._setOpacity(0);
 
-          const material = new THREE.PointsMaterial({
-            color: new THREE.Color(d.color),
-            size: d.size,
-            transparent: true,
-            opacity: 0.55,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true
-          });
+        this.el.addEventListener('mouseenter', () => { this._target = 1; });
+        this.el.addEventListener('mouseleave', () => { this._target = 0; });
+      },
 
-          this._points = new THREE.Points(geometry, material);
-          this.el.object3D.add(this._points);
-          this._halfLen = d.length / 2;
-        },
-
-        tick: function (time, delta) {
-          if (!delta) return;
-          const dt  = delta / 1000;
-          const d   = this.data;
-          const pos = this._points.geometry.attributes.position;
-
-          for (let i = 0; i < d.count; i++) {
-            pos.array[i * 3 + 2] -= this._velocities[i] * d.speed * dt;
-            if (pos.array[i * 3 + 2] < -this._halfLen) {
-              pos.array[i * 3]     = (Math.random() - 0.5) * d.spread * 2;
-              pos.array[i * 3 + 1] = (Math.random() - 0.5) * d.spread;
-              pos.array[i * 3 + 2] = this._halfLen;
-            }
-          }
-          pos.needsUpdate = true;
-        },
-
-        remove: function () {
-          this.el.object3D.remove(this._points);
+      tick: function (time, delta) {
+        if (this._opacity === this._target) return;
+        const step = (delta / this.data.fadeDuration);
+        if (this._target === 1) {
+          this._opacity = Math.min(1, this._opacity + step);
+        } else {
+          this._opacity = Math.max(0, this._opacity - step);
         }
-      });
+        this._setOpacity(this._opacity);
+      },
 
-      // ─── Componente linee di flusso (streamlines) ───────────────────────────
-      AFRAME.registerComponent('flow-lines', {
-        schema: {
-          count:  { type: 'int',    default: 80 },
-          length: { type: 'number', default: 14 },
-          spread: { type: 'number', default: 2.5 },
-          color:  { type: 'color',  default: '#004466' },
-          speed:  { type: 'number', default: 5 }
-        },
-
-        init: function () {
-          const d = this.data;
-          this._lines = [];
-
-          for (let i = 0; i < d.count; i++) {
-            const x = (Math.random() - 0.5) * d.spread * 2;
-            const y = (Math.random() - 0.5) * d.spread;
-            const z = (Math.random() - 0.5) * d.length;
-
-            const points = [
-              new THREE.Vector3(x, y, z),
-              new THREE.Vector3(x, y, z - d.length * 0.06)
-            ];
-            const geo = new THREE.BufferGeometry().setFromPoints(points);
-            const mat = new THREE.LineBasicMaterial({
-              color: new THREE.Color(d.color),
-              transparent: true,
-              opacity: 0.2,
-              blending: THREE.AdditiveBlending,
-              depthWrite: false
-            });
-            const line = new THREE.Line(geo, mat);
-            line.userData.x = x;
-            line.userData.y = y;
-            line.userData.z = z;
-            line.userData.v = 0.5 + Math.random() * 1.5;
-            this.el.object3D.add(line);
-            this._lines.push(line);
+      _setOpacity: function (val) {
+        this._opacity = val;
+        // aggiorna tutti i figli (background + testo)
+        this.el.object3D.traverse(obj => {
+          if (obj.material) {
+            obj.material.opacity = val;
+            obj.material.transparent = true;
           }
-          this._halfLen = d.length / 2;
-        },
+        });
+      }
+    });
 
-        tick: function (time, delta) {
-          if (!delta) return;
-          const dt = delta / 1000;
-          const d  = this.data;
-
-          for (const line of this._lines) {
-            const ud = line.userData;
-            ud.z -= ud.v * d.speed * dt;
-            if (ud.z < -this._halfLen) {
-              ud.z = this._halfLen;
-              ud.x = (Math.random() - 0.5) * d.spread * 2;
-              ud.y = (Math.random() - 0.5) * d.spread;
-            }
-            const pos = line.geometry.attributes.position;
-            pos.setXYZ(0, ud.x, ud.y, ud.z);
-            pos.setXYZ(1, ud.x, ud.y, ud.z - d.length * 0.06);
-            pos.needsUpdate = true;
-          }
-        }
-      });
     </script>
   </head>
 
   <body>
     <a-scene
-      background="color: #020a0f"
+      background="color: #0d0d0d"
       vr-mode-ui="enabled: true"
-      renderer="antialias: true; colorManagement: true"
+      renderer="antialias: true; colorManagement: true; shadowMapEnabled: true"
     >
 
-      <!-- Asset -->
+      <!-- ═══ ASSETS ═══════════════════════════════════════════════════════════ -->
       <a-assets>
         <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
       </a-assets>
 
-      <!-- ─── Luci ─────────────────────────────────────────────── -->
-      <a-light type="ambient"     color="#0a1a2a" intensity="0.6"></a-light>
-      <a-light type="directional" position="2 4 1" color="#ffffff" intensity="0.5"></a-light>
-      <a-light type="point" position="-3 0 -4" color="#00ffff" intensity="3" distance="6"></a-light>
-      <a-light type="point" position=" 3 0 -4" color="#00aaff" intensity="3" distance="6"></a-light>
-      <a-light type="point" position=" 0 2 -4" color="#0033ff" intensity="1.5" distance="5"></a-light>
-      <a-light type="point" position="0 -0.3 -4" color="#004488" intensity="1" distance="4"></a-light>
+      <!-- ═══ LUCI ══════════════════════════════════════════════════════════════ -->
+      <a-light type="ambient" color="#1a1a2e" intensity="0.8"></a-light>
 
-      <!-- ─── Modello macchina ──────────────────────────────────── -->
-      <a-entity position="0 0.4 -4">
+      <!-- Spotlight principale dall'alto sulla macchina -->
+      <a-light type="spot"
+        position="0 6 -4"
+        target="#car-platform"
+        color="#ffffff"
+        intensity="2.5"
+        angle="35"
+        penumbra="0.4"
+        cast-shadow="true">
+      </a-light>
+
+      <!-- Luci laterali colorate stile garage showroom -->
+      <a-light type="point" position="-5 3 -4" color="#4466ff" intensity="1.5" distance="8"></a-light>
+      <a-light type="point" position=" 5 3 -4" color="#ff6600" intensity="0.8" distance="8"></a-light>
+      <a-light type="point" position="0 0.2 -1" color="#ffffff" intensity="0.6" distance="4"></a-light>
+
+      <!-- Luce di riempimento dal basso (rim light) -->
+      <a-light type="point" position="0 -0.5 -4" color="#223366" intensity="1" distance="5"></a-light>
+
+      <!-- ═══ GARAGE ENVIRONMENT ════════════════════════════════════════════════ -->
+
+      <!-- Pavimento cemento scuro -->
+      <a-plane
+        position="0 -0.51 -4"
+        rotation="-90 0 0"
+        width="20" height="20"
+        color="#1a1a1a"
+        material="metalness: 0.3; roughness: 0.8"
+        receive-shadow="true">
+      </a-plane>
+
+      <!-- Linee pavimento stile officina -->
+      <a-box position=" 1.5 -0.505 -4" width="0.05" height="0.001" depth="20" color="#ffcc00" material="emissive: #ffcc00; emissiveIntensity: 0.3"></a-box>
+      <a-box position="-1.5 -0.505 -4" width="0.05" height="0.001" depth="20" color="#ffcc00" material="emissive: #ffcc00; emissiveIntensity: 0.3"></a-box>
+
+      <!-- Pareti -->
+      <a-plane position="0 4 -12"  rotation="0 0 0"   width="24" height="10" color="#111111" material="roughness:1"></a-plane>
+      <a-plane position="-10 4 -4" rotation="0 90 0"  width="20" height="10" color="#111111" material="roughness:1"></a-plane>
+      <a-plane position=" 10 4 -4" rotation="0 -90 0" width="20" height="10" color="#111111" material="roughness:1"></a-plane>
+      <!-- Soffitto -->
+      <a-plane position="0 8 -4" rotation="90 0 0" width="24" height="20" color="#0d0d0d" material="roughness:1"></a-plane>
+
+      <!-- Strisce LED sul soffitto -->
+      <a-box position="-2 7.9 -4" width="0.08" height="0.08" depth="16" color="#ffffff" material="emissive: #ffffff; emissiveIntensity: 1; opacity: 0.9; transparent:true"></a-box>
+      <a-box position=" 2 7.9 -4" width="0.08" height="0.08" depth="16" color="#ffffff" material="emissive: #ffffff; emissiveIntensity: 1; opacity: 0.9; transparent:true"></a-box>
+
+      <!-- Strisce LED a parete bassa (accent blu) -->
+      <a-box position="-9.9 0.1 -4" width="0.05" height="0.05" depth="20" color="#4466ff" material="emissive: #4466ff; emissiveIntensity: 1; opacity: 0.6; transparent:true"></a-box>
+      <a-box position=" 9.9 0.1 -4" width="0.05" height="0.05" depth="20" color="#4466ff" material="emissive: #4466ff; emissiveIntensity: 1; opacity: 0.6; transparent:true"></a-box>
+
+      <!-- ═══ PIATTAFORMA ROTANTE ═══════════════════════════════════════════════ -->
+      <a-entity id="car-platform" position="0 -0.5 -5">
+
+        <!-- Disco piattaforma -->
+        <a-cylinder
+          height="0.12"
+          radius="1.8"
+          color="#222222"
+          material="metalness: 0.8; roughness: 0.2"
+          position="0 0 0">
+        </a-cylinder>
+        <!-- Bordo luminoso piattaforma -->
+        <a-torus
+          radius="1.8"
+          radius-tubular="0.04"
+          color="#4466ff"
+          material="emissive: #4466ff; emissiveIntensity: 1; opacity: 0.8; transparent: true"
+          position="0 0.06 0"
+          rotation="90 0 0">
+        </a-torus>
+
+        <!-- Macchina: ruote di lato → rotation="0 90 0" per ruotarla di 90° sull'asse Y -->
         <a-entity
           gltf-model="#auto"
-          rotation="0 0 0"
+          position="0 0.1 0"
+          rotation="0 90 0"
           scale="0.05 0.05 0.05"
-        ></a-entity>
+          rotate-platform="speed: 0.25">
+        </a-entity>
+
       </a-entity>
 
-      <!-- ─── Particelle vento (layer principale, cyan) ─────────── -->
-      <a-entity
-        position="0 0.8 -4"
-        wind-particles="count: 8000; color: #00eeff; speed: 7; spread: 3; length: 14; size: 0.012"
-      ></a-entity>
+      <!-- ═══ PANNELLI INFORMATIVI (gaze-activated) ════════════════════════════
+           Posizionati attorno all'utente (che sta in 0,1.6,0)
+           a distanza ~3m, altezza occhi
+      ══════════════════════════════════════════════════════════════════════════ -->
 
-      <!-- ─── Particelle vento (layer secondario, bianco lento) ─── -->
-      <a-entity
-        position="0 0.8 -4"
-        wind-particles="count: 2000; color: #ffffff; speed: 3.5; spread: 2.5; length: 14; size: 0.025"
-      ></a-entity>
-
-      <!-- ─── Linee di flusso ───────────────────────────────────── -->
-      <a-entity
-        position="0 0.8 -4"
-        flow-lines="count: 120; length: 14; spread: 3; color: #00aacc; speed: 6"
-      ></a-entity>
-
-      <!-- ─── Tunnel ───────────────────────────────────────────── -->
-      <!-- Pavimento -->
-      <a-plane
-        position="0 -0.35 -4"
-        rotation="-90 0 0"
-        width="8" height="16"
-        color="#001a2a"
-        material="metalness: 0.9; roughness: 0.15"
-      ></a-plane>
-      <!-- Pareti -->
-      <a-plane position="-3.5 1.5 -4" rotation="0  90 0" width="16" height="4" color="#001015" material="opacity: 0.7; transparent: true"></a-plane>
-      <a-plane position=" 3.5 1.5 -4" rotation="0 -90 0" width="16" height="4" color="#001015" material="opacity: 0.7; transparent: true"></a-plane>
-      <!-- Soffitto -->
-      <a-plane position="0 3.5 -4" rotation="90 0 0" width="8" height="16" color="#000d14" material="opacity: 0.8; transparent: true"></a-plane>
-      <!-- Griglia wireframe pavimento -->
-      <a-entity position="0 -0.34 -4" rotation="-90 0 0">
-        <a-entity
-          geometry="primitive: plane; width: 8; height: 16"
-          material="color: #00ffff; wireframe: true; opacity: 0.06; transparent: true"
-        ></a-entity>
+      <!-- Cursore per il gaze (obbligatorio per mouseenter/mouseleave) -->
+      <a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0">
+        <a-cursor
+          color="#ffffff"
+          opacity="0.7"
+          raycaster="objects: .info-panel"
+          fuse="false">
+        </a-cursor>
       </a-entity>
 
-      <!-- ─── Strisce LED a parete ──────────────────────────────── -->
-      <a-box position="-3.4 0.5 -4" width="0.04" height="0.04" depth="14" color="#00ffff" material="emissive: #00ffff; emissiveIntensity: 1; opacity: 0.4; transparent: true"></a-box>
-      <a-box position=" 3.4 0.5 -4" width="0.04" height="0.04" depth="14" color="#00ffff" material="emissive: #00ffff; emissiveIntensity: 1; opacity: 0.4; transparent: true"></a-box>
-      <a-box position="-3.4 2.5 -4" width="0.04" height="0.04" depth="14" color="#0044ff" material="emissive: #0044ff; emissiveIntensity: 1; opacity: 0.3; transparent: true"></a-box>
-      <a-box position=" 3.4 2.5 -4" width="0.04" height="0.04" depth="14" color="#0044ff" material="emissive: #0044ff; emissiveIntensity: 1; opacity: 0.3; transparent: true"></a-box>
-
-      <!-- ─── Camera VR ─────────────────────────────────────────── -->
+      <!-- PANNELLO 1 — davanti a sinistra -->
       <a-entity
-        camera
-        look-controls="pointerLockEnabled: false"
-        position="0 1.6 0"
-      ></a-entity>
+        class="info-panel"
+        gaze-panel
+        position="-2.8 1.6 -3.5"
+        rotation="0 30 0"
+        look-at="[camera]"
+      >
+        <!-- Sfondo pannello -->
+        <a-plane
+          width="1.4" height="0.9"
+          color="#0a0a1a"
+          material="opacity: 0; transparent: true; side: double"
+          border="color: #4466ff"
+        ></a-plane>
+        <!-- Cornice luminosa -->
+        <a-entity position="0 0 0.001">
+          <a-box position=" 0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="-0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0  0.435 0" width="1.4" height="0.03" depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0 -0.435 0" width="1.4" height="0.03" depth="0.01" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+        </a-entity>
+        <!-- Testo titolo -->
+        <a-text
+          value="TITOLO PANNELLO 1"
+          align="center"
+          color="#4488ff"
+          width="1.2"
+          position="0 0.3 0.002"
+          font="exo2bold"
+          wrap-count="20">
+        </a-text>
+        <!-- Testo corpo -->
+        <a-text
+          value="Testo da compilare."
+          align="center"
+          color="#ccddff"
+          width="1.1"
+          position="0 -0.05 0.002"
+          wrap-count="28">
+        </a-text>
+      </a-entity>
+
+      <!-- PANNELLO 2 — davanti a destra -->
+      <a-entity
+        class="info-panel"
+        gaze-panel
+        position="2.8 1.6 -3.5"
+        rotation="0 -30 0"
+      >
+        <a-plane width="1.4" height="0.9" color="#0a0a1a" material="opacity: 0; transparent: true; side: double"></a-plane>
+        <a-entity position="0 0 0.001">
+          <a-box position=" 0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="-0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0  0.435 0" width="1.4" height="0.03" depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0 -0.435 0" width="1.4" height="0.03" depth="0.01" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+        </a-entity>
+        <a-text value="TITOLO PANNELLO 2" align="center" color="#ff8833" width="1.2" position="0 0.3 0.002" font="exo2bold" wrap-count="20"></a-text>
+        <a-text value="Testo da compilare." align="center" color="#ffddcc" width="1.1" position="0 -0.05 0.002" wrap-count="28"></a-text>
+      </a-entity>
+
+      <!-- PANNELLO 3 — laterale sinistra -->
+      <a-entity
+        class="info-panel"
+        gaze-panel
+        position="-3.5 1.6 -5"
+        rotation="0 70 0"
+      >
+        <a-plane width="1.4" height="0.9" color="#0a0a1a" material="opacity: 0; transparent: true; side: double"></a-plane>
+        <a-entity position="0 0 0.001">
+          <a-box position=" 0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="-0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0  0.435 0" width="1.4" height="0.03" depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0 -0.435 0" width="1.4" height="0.03" depth="0.01" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+        </a-entity>
+        <a-text value="TITOLO PANNELLO 3" align="center" color="#00ffaa" width="1.2" position="0 0.3 0.002" font="exo2bold" wrap-count="20"></a-text>
+        <a-text value="Testo da compilare." align="center" color="#ccffe8" width="1.1" position="0 -0.05 0.002" wrap-count="28"></a-text>
+      </a-entity>
+
+      <!-- PANNELLO 4 — dietro/laterale destra -->
+      <a-entity
+        class="info-panel"
+        gaze-panel
+        position="3.5 1.6 -5"
+        rotation="0 -70 0"
+      >
+        <a-plane width="1.4" height="0.9" color="#0a0a1a" material="opacity: 0; transparent: true; side: double"></a-plane>
+        <a-entity position="0 0 0.001">
+          <a-box position=" 0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="-0.69 0 0" width="0.03" height="0.9"  depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0  0.435 0" width="1.4" height="0.03" depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+          <a-box position="0 -0.435 0" width="1.4" height="0.03" depth="0.01" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1; opacity:0; transparent:true"></a-box>
+        </a-entity>
+        <a-text value="TITOLO PANNELLO 4" align="center" color="#cc44ff" width="1.2" position="0 0.3 0.002" font="exo2bold" wrap-count="20"></a-text>
+        <a-text value="Testo da compilare." align="center" color="#eeccff" width="1.1" position="0 -0.05 0.002" wrap-count="28"></a-text>
+      </a-entity>
 
     </a-scene>
   </body>
