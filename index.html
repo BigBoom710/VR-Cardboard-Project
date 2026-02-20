@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Car Showcase VR</title>
+    <title>Car Dealership VR</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script>
 
@@ -34,99 +34,113 @@
 
     </script>
   </head>
-
   <body>
     <a-scene
-      background="color: #0d0d0d"
+      background="color: #e8e8e8"
       vr-mode-ui="enabled: true"
       renderer="antialias: true; colorManagement: true"
     >
 
-      <a-assets>
-        <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
+      <!-- ═══ ASSETS ══════════════════════════════════════════════════════════ -->
+      <a-assets timeout="30000">
+        <a-asset-item id="auto"        src="macchina_test.glb"></a-asset-item>
+        <!-- Kenney Furniture Kit — CC0 — cdn.poly.pizza -->
+        <a-asset-item id="sofa"        src="https://cdn.poly.pizza/m/f47310a0-4d22-48a3-a2ce-62f67bcc998d/model.glb"></a-asset-item>
+        <a-asset-item id="sofa-corner" src="https://cdn.poly.pizza/m/e78c10a3-58e6-400b-a576-c5db78c2d30f/model.glb"></a-asset-item>
+        <a-asset-item id="chair"       src="https://cdn.poly.pizza/m/36331876-a6da-4a91-9788-ac78650dd891/model.glb"></a-asset-item>
+        <a-asset-item id="table"       src="https://cdn.poly.pizza/m/68c4bcbd-0c5d-42ee-ab91-4cce6672fa18/model.glb"></a-asset-item>
+        <a-asset-item id="plant"       src="https://cdn.poly.pizza/m/b892ee12-370d-4dae-aa14-d377b89f9413/model.glb"></a-asset-item>
+        <a-asset-item id="plant-pot"   src="https://cdn.poly.pizza/m/6482596c-6423-415d-bfd5-e66bcc546642/model.glb"></a-asset-item>
+        <a-asset-item id="lamp"        src="https://cdn.poly.pizza/m/98dd45a1-0682-4d44-83d1-32fa2a4fca5b/model.glb"></a-asset-item>
+        <a-asset-item id="desk"        src="https://cdn.poly.pizza/m/0716218b-3aae-48e6-8ddd-185cf7f7b7d7/model.glb"></a-asset-item>
+        <a-asset-item id="desk-chair"  src="https://cdn.poly.pizza/m/64699642-a4c2-4850-9c4b-558a328ed1bf/model.glb"></a-asset-item>
       </a-assets>
 
       <!-- ═══ LUCI ════════════════════════════════════════════════════════════ -->
-      <a-light type="ambient" color="#1a1a2e" intensity="0.7"></a-light>
-      <a-light type="directional" position="2 4 1" color="#ffffff" intensity="0.4"></a-light>
-      <a-light type="spot" position="0 6 -5" color="#ffffff" intensity="3.5" angle="28" penumbra="0.5"></a-light>
-      <a-light type="point" position="-5 2 -5" color="#4466ff" intensity="1.5" distance="9"></a-light>
-      <a-light type="point" position=" 5 2 -5" color="#ff6600" intensity="1.0" distance="9"></a-light>
-      <a-light type="point" position=" 0 0.3 -3" color="#ffffff" intensity="0.5" distance="4"></a-light>
-      <a-light type="point" position=" 0 -0.4 -5" color="#223366" intensity="1" distance="5"></a-light>
+      <a-light type="ambient"     color="#ffffff" intensity="0.9"></a-light>
+      <a-light type="directional" position="3 8 2"  color="#fff8f0" intensity="0.8"></a-light>
+      <a-light type="directional" position="-3 6 -2" color="#f0f4ff" intensity="0.4"></a-light>
+      <!-- Spot sulla macchina -->
+      <a-light type="spot" position="0 7 -5" color="#ffffff" intensity="4" angle="25" penumbra="0.5"></a-light>
+      <!-- Luci calde zona attesa -->
+      <a-light type="point" position="-7 3 2"  color="#ffe0a0" intensity="1.5" distance="8"></a-light>
+      <a-light type="point" position="-7 3 -2" color="#ffe0a0" intensity="1.2" distance="7"></a-light>
+      <!-- Accent blu sulla piattaforma -->
+      <a-light type="point" position="0 -0.3 -5" color="#aaccff" intensity="1.2" distance="4"></a-light>
 
-      <!-- ═══ GARAGE ═══════════════════════════════════════════════════════════ -->
+      <!-- ═══ SHOWROOM ══════════════════════════════════════════════════════════
+           Concessionaria moderna: pareti bianche/grigio chiaro, pavimento lucido,
+           vetrate simulate, zona attesa con divani, banco reception
+      ══════════════════════════════════════════════════════════════════════════ -->
 
-      <!-- Pavimento -->
-      <a-plane position="0 -0.51 -5" rotation="-90 0 0" width="22" height="22"
-        color="#1a1a1a" material="metalness:0.3; roughness:0.8"></a-plane>
-      <!-- Linee gialle pavimento -->
-      <a-box position=" 2 -0.505 -5" width="0.05" height="0.001" depth="22" color="#ffcc00" material="emissive:#ffcc00; emissiveIntensity:0.4"></a-box>
-      <a-box position="-2 -0.505 -5" width="0.05" height="0.001" depth="22" color="#ffcc00" material="emissive:#ffcc00; emissiveIntensity:0.4"></a-box>
+      <!-- Pavimento lucido bianco -->
+      <a-plane position="0 -0.51 -3" rotation="-90 0 0" width="28" height="22"
+        color="#f0f0f0" material="metalness:0.4; roughness:0.1"></a-plane>
 
-      <!-- Pareti laterali -->
-      <a-plane position="-11 4 -5" rotation="0  90 0" width="22" height="10" color="#111111" material="roughness:1"></a-plane>
-      <a-plane position=" 11 4 -5" rotation="0 -90 0" width="22" height="10" color="#111111" material="roughness:1"></a-plane>
+      <!-- Strisce pavimento decorative grigio -->
+      <a-box position="0 -0.505 -3"    width="28"  height="0.001" depth="0.04" color="#cccccc"></a-box>
+      <a-box position="0 -0.505 -5"    width="28"  height="0.001" depth="0.04" color="#cccccc"></a-box>
+      <a-box position="0 -0.505 -8"    width="28"  height="0.001" depth="0.04" color="#cccccc"></a-box>
+      <a-box position="4 -0.505 -3"    width="0.04" height="0.001" depth="22"  color="#cccccc"></a-box>
+      <a-box position="-4 -0.505 -3"   width="0.04" height="0.001" depth="22"  color="#cccccc"></a-box>
 
-      <!-- Parete FRONTALE (dietro la macchina) con dettagli -->
-      <a-plane position="0 4 -14" rotation="0 0 0" width="24" height="10" color="#0f0f0f" material="roughness:1"></a-plane>
-      <!-- Logo / marchio centrato sulla parete frontale -->
-      <a-box position="0 5.5 -13.95" width="3.5" height="0.06" depth="0.02" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.2"></a-box>
-      <a-text value="CAR SHOWCASE" align="center" color="#4488ff" width="5" position="0 4.8 -13.9"
-        material="emissive:#4488ff" wrap-count="16"></a-text>
-      <a-box position="0 4.2 -13.95" width="3.5" height="0.03" depth="0.02" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:0.8"></a-box>
-      <!-- Pannellature decorative sulla parete frontale -->
-      <a-box position="-5 4 -13.95" width="2.5" height="5" depth="0.03" color="#161616" material="roughness:1"></a-box>
-      <a-box position=" 5 4 -13.95" width="2.5" height="5" depth="0.03" color="#161616" material="roughness:1"></a-box>
-      <a-box position="-9 4 -13.95" width="2" height="5" depth="0.03" color="#141414" material="roughness:1"></a-box>
-      <a-box position=" 9 4 -13.95" width="2" height="5" depth="0.03" color="#141414" material="roughness:1"></a-box>
-      <!-- Strisce verticali luminose sulla parete frontale -->
-      <a-box position="-3.8 4 -13.93" width="0.04" height="7" depth="0.02" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:0.5; opacity:0.6; transparent:true"></a-box>
-      <a-box position=" 3.8 4 -13.93" width="0.04" height="7" depth="0.02" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:0.5; opacity:0.6; transparent:true"></a-box>
+      <!-- Pareti bianche -->
+      <!-- Parete frontale (vetrata simulata) -->
+      <a-plane position="0 4 -14" rotation="0 0 0" width="28" height="10" color="#f5f5f5" material="roughness:1"></a-plane>
+      <!-- Montanti vetrata frontale -->
+      <a-box position="-6 4 -13.95"  width="0.15" height="10" depth="0.1" color="#888888"></a-box>
+      <a-box position=" 0 4 -13.95"  width="0.15" height="10" depth="0.1" color="#888888"></a-box>
+      <a-box position=" 6 4 -13.95"  width="0.15" height="10" depth="0.1" color="#888888"></a-box>
+      <a-box position="-12 4 -13.95" width="0.15" height="10" depth="0.1" color="#888888"></a-box>
+      <a-box position=" 12 4 -13.95" width="0.15" height="10" depth="0.1" color="#888888"></a-box>
+      <!-- Traversa orizzontale -->
+      <a-box position="0 2 -13.95" width="28" height="0.1" depth="0.1" color="#888888"></a-box>
+      <a-box position="0 6 -13.95" width="28" height="0.1" depth="0.1" color="#888888"></a-box>
+      <!-- Vetro simulato (pannelli azzurrognoli semitrasparenti) -->
+      <a-plane position="-9 4 -13.9" rotation="0 0 0" width="5.7" height="7.8" material="color:#c8e0ff; opacity:0.18; transparent:true; side:double"></a-plane>
+      <a-plane position="-3 4 -13.9" rotation="0 0 0" width="5.7" height="7.8" material="color:#c8e0ff; opacity:0.18; transparent:true; side:double"></a-plane>
+      <a-plane position=" 3 4 -13.9" rotation="0 0 0" width="5.7" height="7.8" material="color:#c8e0ff; opacity:0.18; transparent:true; side:double"></a-plane>
+      <a-plane position=" 9 4 -13.9" rotation="0 0 0" width="5.7" height="7.8" material="color:#c8e0ff; opacity:0.18; transparent:true; side:double"></a-plane>
 
-      <!-- Parete POSTERIORE (dietro la persona) con dettagli -->
-      <a-plane position="0 4 4" rotation="0 180 0" width="24" height="10" color="#0f0f0f" material="roughness:1"></a-plane>
-      <!-- Griglia tecnica sulla parete posteriore -->
-      <a-box position="0 2 3.95"  width="22" height="0.03" depth="0.02" color="#222" material="roughness:1"></a-box>
-      <a-box position="0 4 3.95"  width="22" height="0.03" depth="0.02" color="#222" material="roughness:1"></a-box>
-      <a-box position="0 6 3.95"  width="22" height="0.03" depth="0.02" color="#222" material="roughness:1"></a-box>
-      <a-box position="-6 4 3.95" width="0.03" height="8" depth="0.02" color="#222" material="roughness:1"></a-box>
-      <a-box position=" 6 4 3.95" width="0.03" height="8" depth="0.02" color="#222" material="roughness:1"></a-box>
-      <a-box position="-3 4 3.95" width="0.03" height="8" depth="0.02" color="#1a1a1a" material="roughness:1"></a-box>
-      <a-box position=" 3 4 3.95" width="0.03" height="8" depth="0.02" color="#1a1a1a" material="roughness:1"></a-box>
-      <!-- Accent arancio sulla parete posteriore -->
-      <a-box position="0 1.2 3.93" width="8" height="0.04" depth="0.02" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:0.6; opacity:0.5; transparent:true"></a-box>
+      <!-- Parete destra (divisore area admin) -->
+      <a-plane position="12 4 -3" rotation="0 -90 0" width="22" height="10" color="#f0f0f0" material="roughness:1"></a-plane>
 
-      <!-- Soffitto -->
-      <a-plane position="0 9 -5" rotation="90 0 0" width="24" height="22" color="#0d0d0d" material="roughness:1"></a-plane>
-      <!-- Strip LED soffitto -->
-      <a-box position="-2.5 8.9 -5" width="0.08" height="0.08" depth="18" color="#ffffff" material="emissive:#ffffff; emissiveIntensity:1; opacity:0.95; transparent:true"></a-box>
-      <a-box position=" 2.5 8.9 -5" width="0.08" height="0.08" depth="18" color="#ffffff" material="emissive:#ffffff; emissiveIntensity:1; opacity:0.95; transparent:true"></a-box>
-      <!-- Strip LED parete bassa -->
-      <a-box position="-10.9 0.08 -5" width="0.05" height="0.05" depth="22" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0.6; transparent:true"></a-box>
-      <a-box position=" 10.9 0.08 -5" width="0.05" height="0.05" depth="22" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1; opacity:0.6; transparent:true"></a-box>
+      <!-- Parete sinistra — insegna concessionaria -->
+      <a-plane position="-12 4 -3" rotation="0 90 0" width="22" height="10" color="#f0f0f0" material="roughness:1"></a-plane>
+      <!-- Logo/insegna sulla parete sinistra -->
+      <a-box  position="-11.9 6.5 -3" width="0.05" height="0.8" depth="7" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.4"></a-box>
+      <a-text value="AUTO SHOWROOM" rotation="0 90 0" position="-11.85 6.5 -3" color="#cc0000" width="5" align="center" wrap-count="16"></a-text>
+      <a-text value="PREMIUM SELECTION" rotation="0 90 0" position="-11.85 5.8 -3" color="#555555" width="3.5" align="center" wrap-count="20"></a-text>
+
+      <!-- Parete posteriore -->
+      <a-plane position="0 4 5" rotation="0 180 0" width="28" height="10" color="#f0f0f0" material="roughness:1"></a-plane>
+
+      <!-- Soffitto bianco con travi a vista -->
+      <a-plane position="0 9 -3" rotation="90 0 0" width="28" height="22" color="#ffffff" material="roughness:1"></a-plane>
+      <!-- Travi soffitto -->
+      <a-box position="-8 8.8 -3"  width="0.3" height="0.4" depth="22" color="#e0e0e0"></a-box>
+      <a-box position=" 8 8.8 -3"  width="0.3" height="0.4" depth="22" color="#e0e0e0"></a-box>
+      <!-- Strisce LED a soffitto (moderne, bianche) -->
+      <a-box position="-3 8.95 -3" width="0.12" height="0.08" depth="18" color="#ffffff" material="emissive:#ffffff; emissiveIntensity:1.5; opacity:1"></a-box>
+      <a-box position=" 3 8.95 -3" width="0.12" height="0.08" depth="18" color="#ffffff" material="emissive:#ffffff; emissiveIntensity:1.5; opacity:1"></a-box>
+      <a-box position=" 0 8.95 -3" width="0.08" height="0.06" depth="18" color="#ffffff" material="emissive:#ffffff; emissiveIntensity:1; opacity:0.7; transparent:true"></a-box>
+
+      <!-- Fascia rossa a parete (brand accent) -->
+      <a-box position="0 0.5 -13.92" width="28" height="0.08" depth="0.05" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.5"></a-box>
+      <a-box position="0 0.5 4.92"   width="28" height="0.08" depth="0.05" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.3"></a-box>
+      <a-box position="-11.92 0.5 -3" width="0.05" height="0.08" depth="22" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.3"></a-box>
+      <a-box position=" 11.92 0.5 -3" width="0.05" height="0.08" depth="22" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.3"></a-box>
 
       <!-- ═══ PIATTAFORMA ROTANTE ══════════════════════════════════════════════ -->
-      <a-entity position="0 -0.5 -5" rotate-y="speed: 0.25">
-        <a-cylinder height="0.12" radius="1.8" color="#222222" material="metalness:0.85; roughness:0.15"></a-cylinder>
-        <a-torus radius="1.8" radius-tubular="0.045" color="#4466ff"
-          material="emissive:#4466ff; emissiveIntensity:1; opacity:0.85; transparent:true"
-          position="0 0.06 0" rotation="90 0 0">
+      <a-entity position="0 -0.5 -6" rotate-y="speed: 0.25">
+        <!-- Disco piattaforma grigio lucido -->
+        <a-cylinder height="0.1" radius="2.0" color="#333333" material="metalness:0.9; roughness:0.1"></a-cylinder>
+        <!-- Bordo rosso -->
+        <a-torus radius="2.0" radius-tubular="0.04" color="#cc0000"
+          material="emissive:#cc0000; emissiveIntensity:0.8; opacity:0.9; transparent:true"
+          position="0 0.05 0" rotation="90 0 0">
         </a-torus>
-
-        <!--
-          CALCOLO VERIFICATO CON MATRICE:
-          rotation="-90 90 0" (ordine XYZ) trasforma:
-            GLB (bb_cx=-110, 0, z_min=-4.32) → world (0, -0.039, +0.99)
-          
-          Per mettere il CENTRO BB a (0,0,0) della piattaforma e le ruote sul disco:
-            position X = 0
-            position Y = +0.099  (porta fondo ruote a top disco)
-            position Z = -0.99   ← era +0.99, SBAGLIATO!
-          
-          Con Z=-0.99 il centro BB del modello cade esattamente su X=0,Z=0
-          della piattaforma → ruota su se stesso.
-        -->
+        <!-- Macchina centrata: position Z=-0.99 porta il centro BB a Z=0 -->
         <a-entity
           gltf-model="#auto"
           rotation="-90 90 0"
@@ -135,75 +149,108 @@
         </a-entity>
       </a-entity>
 
+      <!-- ═══ ZONA ATTESA — sinistra ══════════════════════════════════════════ -->
+      <!-- Divano angolare -->
+      <a-entity gltf-model="#sofa-corner" position="-9 -0.51 -1"  rotation="0 90 0"  scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="#sofa"        position="-9 -0.51 -4"  rotation="0 90 0"  scale="1.5 1.5 1.5"></a-entity>
+      <!-- Tavolino davanti al divano -->
+      <a-entity gltf-model="#table"       position="-7 -0.51 -2"  rotation="0 0 0"   scale="1.2 1.2 1.2"></a-entity>
+      <!-- Lampada piantana -->
+      <a-entity gltf-model="#lamp"        position="-10.5 -0.51 0.5" rotation="0 0 0" scale="1.3 1.3 1.3"></a-entity>
+      <!-- Piante decorative -->
+      <a-entity gltf-model="#plant-pot"   position="-10.5 -0.51 -7" rotation="0 45 0" scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="#plant"       position="-10.5 -0.51  3"  rotation="0 20 0" scale="1.4 1.4 1.4"></a-entity>
+
+      <!-- ═══ ZONA RECEPTION — destra ═════════════════════════════════════════ -->
+      <!-- Bancone reception (semplice geometry) -->
+      <a-box position="9 0.2 -2" width="5" height="1.4" depth="1.2" color="#ffffff" material="metalness:0.2; roughness:0.5"></a-box>
+      <a-box position="9 0.87 -2" width="5.1" height="0.08" depth="1.3" color="#dddddd" material="metalness:0.5; roughness:0.2"></a-box>
+      <!-- Fascia rossa del bancone -->
+      <a-box position="9 0.0 -1.4" width="5" height="1.4" depth="0.04" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.2"></a-box>
+      <!-- Scrivania + sedia dietro il bancone -->
+      <a-entity gltf-model="#desk"       position="9.5 -0.51 -3.5" rotation="0 180 0" scale="1.2 1.2 1.2"></a-entity>
+      <a-entity gltf-model="#desk-chair" position="9.5 -0.51 -3.0" rotation="0 180 0" scale="1.0 1.0 1.0"></a-entity>
+      <!-- Schermo sul bancone -->
+      <a-box position="8 0.95 -1.6" width="0.8" height="0.5" depth="0.05" color="#111111"></a-box>
+      <a-plane position="8 0.95 -1.57" width="0.72" height="0.42" material="color:#1a3a6a; opacity:1" rotation="0 0 0"></a-plane>
+      <!-- Pianta decorativa reception -->
+      <a-entity gltf-model="#plant-pot" position="11.5 -0.51 -1" rotation="0 0 0" scale="1.3 1.3 1.3"></a-entity>
+
+      <!-- ═══ PIANTE ANGOLI SHOWROOM ══════════════════════════════════════════ -->
+      <a-entity gltf-model="#plant-pot" position="-11.5 -0.51 -13" rotation="0 30 0"  scale="2 2 2"></a-entity>
+      <a-entity gltf-model="#plant-pot" position=" 11.5 -0.51 -13" rotation="0 -30 0" scale="2 2 2"></a-entity>
+      <a-entity gltf-model="#plant"     position="-11.5 -0.51  4"  rotation="0 0 0"   scale="1.8 1.8 1.8"></a-entity>
+      <a-entity gltf-model="#plant"     position=" 11.5 -0.51  4"  rotation="0 0 0"   scale="1.8 1.8 1.8"></a-entity>
+
       <!-- ═══ CAMERA + CURSORE ════════════════════════════════════════════════ -->
       <a-entity camera look-controls="pointerLockEnabled: false" position="0 1.6 0">
         <a-cursor
           fuse="false"
           raycaster="objects: .gaze-target; far: 14"
           geometry="primitive: ring; radiusInner: 0.012; radiusOuter: 0.018"
-          material="color: #ffffff; shader: flat; opacity: 0.7">
+          material="color: #333333; shader: flat; opacity: 0.8">
         </a-cursor>
       </a-entity>
 
-      <!-- ═══ PANNELLI ════════════════════════════════════════════════════════ -->
+      <!-- ═══ PANNELLI GAZE ════════════════════════════════════════════════════ -->
 
-      <!-- P1 — sinistra, BLU -->
+      <!-- P1 — sinistra, ROSSO brand -->
       <a-entity position="-2.5 1.6 -1.5" rotation="0 60 0">
-        <a-text value="TITOLO 1" align="center" color="#4488ff" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
-        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.5"></a-box>
+        <a-text value="TITOLO 1" align="center" color="#cc0000" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
+        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.8"></a-box>
         <a-plane id="t1" class="gaze-target" width="1.9" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
         <a-entity id="b1" gaze-body>
-          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#05091f; opacity:0.93; transparent:true; side:double"></a-plane>
-          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#4466ff" material="emissive:#4466ff; emissiveIntensity:1.3"></a-box>
-          <a-text value="Inserisci qui il tuo testo." align="center" color="#aabbff" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
+          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#1a0000; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#ffcccc" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
         </a-entity>
       </a-entity>
 
-      <!-- P2 — destra, ARANCIO -->
+      <!-- P2 — destra, GRIGIO scuro -->
       <a-entity position="2.5 1.6 -1.5" rotation="0 -60 0">
-        <a-text value="TITOLO 2" align="center" color="#ff7722" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
-        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.5"></a-box>
+        <a-text value="TITOLO 2" align="center" color="#333333" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
+        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#444444" material="emissive:#444444; emissiveIntensity:0.5"></a-box>
         <a-plane id="t2" class="gaze-target" width="1.9" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
         <a-entity id="b2" gaze-body>
-          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#1a0800; opacity:0.93; transparent:true; side:double"></a-plane>
-          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
-          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
-          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
-          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#ff6600" material="emissive:#ff6600; emissiveIntensity:1.3"></a-box>
-          <a-text value="Inserisci qui il tuo testo." align="center" color="#ffddaa" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
+          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#1a1a1a; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#dddddd" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
         </a-entity>
       </a-entity>
 
-      <!-- P3 — dietro-sinistra, VERDE -->
+      <!-- P3 — dietro-sinistra, ROSSO -->
       <a-entity position="-2.0 1.6 1.5" rotation="0 120 0">
-        <a-text value="TITOLO 3" align="center" color="#00ffaa" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
-        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.5"></a-box>
+        <a-text value="TITOLO 3" align="center" color="#cc0000" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
+        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.8"></a-box>
         <a-plane id="t3" class="gaze-target" width="1.9" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
         <a-entity id="b3" gaze-body>
-          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#001a0d; opacity:0.93; transparent:true; side:double"></a-plane>
-          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
-          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
-          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
-          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#00ffaa" material="emissive:#00ffaa; emissiveIntensity:1.3"></a-box>
-          <a-text value="Inserisci qui il tuo testo." align="center" color="#ccffe8" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
+          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#1a0000; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:1"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#ffcccc" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
         </a-entity>
       </a-entity>
 
-      <!-- P4 — dietro-destra, VIOLA -->
+      <!-- P4 — dietro-destra, GRIGIO -->
       <a-entity position="2.0 1.6 1.5" rotation="0 -120 0">
-        <a-text value="TITOLO 4" align="center" color="#cc44ff" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
-        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.5"></a-box>
+        <a-text value="TITOLO 4" align="center" color="#333333" width="2.4" position="0 0.52 0" wrap-count="18"></a-text>
+        <a-box position="0 0.32 0" width="0.85" height="0.012" depth="0.005" color="#444444" material="emissive:#444444; emissiveIntensity:0.5"></a-box>
         <a-plane id="t4" class="gaze-target" width="1.9" height="1.2" position="0 0 0" material="opacity:0; transparent:true; side:double"></a-plane>
         <a-entity id="b4" gaze-body>
-          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#0d0020; opacity:0.93; transparent:true; side:double"></a-plane>
-          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
-          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#cc44ff" material="emissive:#cc44ff; emissiveIntensity:1.3"></a-box>
-          <a-text value="Inserisci qui il tuo testo." align="center" color="#eeccff" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
+          <a-plane width="1.7" height="0.72" position="0 -0.12 -0.005" material="color:#1a1a1a; opacity:0.93; transparent:true; side:double"></a-plane>
+          <a-box position=" 0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="-0.84 -0.12 0" width="0.025" height="0.72" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="0  0.245 0" width="1.7" height="0.025" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-box position="0 -0.485 0" width="1.7" height="0.025" depth="0.008" color="#888888" material="emissive:#888888; emissiveIntensity:0.8"></a-box>
+          <a-text value="Inserisci qui il tuo testo." align="center" color="#dddddd" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
         </a-entity>
       </a-entity>
 
