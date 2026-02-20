@@ -36,13 +36,14 @@
   </head>
   <body>
     <a-scene
-      background="color: #d0d0d0"
+      background="color: #282828"
       vr-mode-ui="enabled: true"
       renderer="antialias: true; colorManagement: true"
     >
 
       <!-- ═══ ASSETS ══════════════════════════════════════════════════════════ -->
       <a-assets timeout="30000">
+        <canvas id="floor-tex" width="256" height="256"></canvas>
         <a-asset-item id="auto"        src="macchina_test.glb"></a-asset-item>
         <a-asset-item id="sofa"        src="https://cdn.poly.pizza/m/f47310a0-4d22-48a3-a2ce-62f67bcc998d/model.glb"></a-asset-item>
         <a-asset-item id="sofa-corner" src="https://cdn.poly.pizza/m/e78c10a3-58e6-400b-a576-c5db78c2d30f/model.glb"></a-asset-item>
@@ -82,31 +83,27 @@
 
       <!-- ═══ SHOWROOM ═════════════════════════════════════════════════════════ -->
 
-      <!-- Pavimento — grigio medio, non bianco puro -->
-      <a-plane position="0 -0.51 -3" rotation="-90 0 0" width="28" height="22"
-        color="#c8c8c8" material="metalness:0.3; roughness:0.2"></a-plane>
-      <!-- Strisce pavimento decorative -->
-      <a-box position="0 -0.505 -3"   width="28"   height="0.001" depth="0.05" color="#aaaaaa"></a-box>
-      <a-box position="0 -0.505 -6"   width="28"   height="0.001" depth="0.05" color="#aaaaaa"></a-box>
-      <a-box position="0 -0.505 -9"   width="28"   height="0.001" depth="0.05" color="#aaaaaa"></a-box>
-      <a-box position=" 4 -0.505 -3"  width="0.05" height="0.001" depth="22"   color="#aaaaaa"></a-box>
-      <a-box position="-4 -0.505 -3"  width="0.05" height="0.001" depth="22"   color="#aaaaaa"></a-box>
+      <!-- Pavimento — marmo grigio-beige con griglia sottile generata via canvas -->
+      <a-plane id="floor" position="0 -0.51 -3" rotation="-90 0 0" width="28" height="22"
+        material="src: #floor-tex; repeat: 14 11; metalness:0.25; roughness:0.35"></a-plane>
 
-      <!-- Pareti — grigio leggermente caldo, non bianco -->
-      <a-plane position="0 4 -14"   rotation="0 0 0"    width="28" height="10" color="#e0dedd" material="roughness:1"></a-plane>
-      <a-plane position="-12 4 -3"  rotation="0  90 0"  width="22" height="10" color="#e0dedd" material="roughness:1"></a-plane>
-      <a-plane position=" 12 4 -3"  rotation="0 -90 0"  width="22" height="10" color="#dddcdb" material="roughness:1"></a-plane>
-      <a-plane position="0 4 5"     rotation="0 180 0"  width="28" height="10" color="#e0dedd" material="roughness:1"></a-plane>
-      <a-plane position="0 9 -3"    rotation="90 0 0"   width="28" height="22" color="#e8e8e8" material="roughness:1"></a-plane>
+      <!-- Pareti — antracite caldo, moderno -->
+      <a-plane position="0 4 -14"   rotation="0 0 0"    width="28" height="10" color="#2e2e2e" material="roughness:0.85"></a-plane>
+      <a-plane position="-12 4 -3"  rotation="0  90 0"  width="22" height="10" color="#2e2e2e" material="roughness:0.85"></a-plane>
+      <a-plane position=" 12 4 -3"  rotation="0 -90 0"  width="22" height="10" color="#2c2c2c" material="roughness:0.85"></a-plane>
+      <a-plane position="0 4 5"     rotation="0 180 0"  width="28" height="10" color="#2e2e2e" material="roughness:0.85"></a-plane>
+      <!-- Soffitto metallico acciaio scuro -->
+      <a-plane position="0 9 -3"    rotation="90 0 0"   width="28" height="22"
+        color="#3a3a3a" material="metalness:0.85; roughness:0.25"></a-plane>
 
       <!-- Vetrata frontale con montanti -->
-      <a-box position="-6  4 -13.95" width="0.15" height="10" depth="0.1" color="#777777"></a-box>
-      <a-box position=" 0  4 -13.95" width="0.15" height="10" depth="0.1" color="#777777"></a-box>
-      <a-box position=" 6  4 -13.95" width="0.15" height="10" depth="0.1" color="#777777"></a-box>
-      <a-box position="-12 4 -13.95" width="0.15" height="10" depth="0.1" color="#777777"></a-box>
-      <a-box position=" 12 4 -13.95" width="0.15" height="10" depth="0.1" color="#777777"></a-box>
-      <a-box position="0 2 -13.95"   width="28"   height="0.1" depth="0.1" color="#777777"></a-box>
-      <a-box position="0 6 -13.95"   width="28"   height="0.1" depth="0.1" color="#777777"></a-box>
+      <a-box position="-6  4 -13.95" width="0.15" height="10" depth="0.1" color="#555555"></a-box>
+      <a-box position=" 0  4 -13.95" width="0.15" height="10" depth="0.1" color="#555555"></a-box>
+      <a-box position=" 6  4 -13.95" width="0.15" height="10" depth="0.1" color="#555555"></a-box>
+      <a-box position="-12 4 -13.95" width="0.15" height="10" depth="0.1" color="#555555"></a-box>
+      <a-box position=" 12 4 -13.95" width="0.15" height="10" depth="0.1" color="#555555"></a-box>
+      <a-box position="0 2 -13.95"   width="28"   height="0.1" depth="0.1" color="#555555"></a-box>
+      <a-box position="0 6 -13.95"   width="28"   height="0.1" depth="0.1" color="#555555"></a-box>
       <!-- Pannelli vetro (colore cielo, meno saturo) -->
       <a-plane position="-9 4 -13.9" width="5.7" height="7.8" material="color:#b8d4e8; opacity:0.22; transparent:true; side:double"></a-plane>
       <a-plane position="-3 4 -13.9" width="5.7" height="7.8" material="color:#b8d4e8; opacity:0.22; transparent:true; side:double"></a-plane>
@@ -128,8 +125,8 @@
 
       <!-- Insegna parete sinistra -->
       <a-box  position="-11.9 6.5 -3" width="0.04" height="0.8" depth="6" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.5"></a-box>
-      <a-text value="AUTO SHOWROOM"    rotation="0 90 0" position="-11.85 6.5 -3" color="#cc0000" width="4.5" align="center" wrap-count="16"></a-text>
-      <a-text value="PREMIUM SELECTION" rotation="0 90 0" position="-11.85 5.7 -3" color="#777777" width="3"   align="center" wrap-count="20"></a-text>
+      <a-text value="AUTO SHOWROOM"    rotation="0 90 0" position="-11.85 6.5 -3" color="#ffffff" width="4.5" align="center" wrap-count="16"></a-text>
+      <a-text value="PREMIUM SELECTION" rotation="0 90 0" position="-11.85 5.7 -3" color="#aaaaaa" width="3"   align="center" wrap-count="20"></a-text>
 
       <!-- ═══ PIATTAFORMA ROTANTE ══════════════════════════════════════════════ -->
       <a-entity position="0 -0.5 -6" rotate-y="speed: 0.25">
@@ -141,8 +138,8 @@
         <a-entity
           gltf-model="#auto"
           rotation="-90 90 0"
-          scale="0.009 0.009 0.009"
-          position="0 0.099 -0.99">
+          scale="0.0144 0.0144 0.0144"
+          position="0 0.122 -1.584">
         </a-entity>
       </a-entity>
 
@@ -155,8 +152,8 @@
       <a-entity gltf-model="#plant"       position="-10.5 -0.51  3"  rotation="0 20 0" scale="1.4 1.4 1.4"></a-entity>
 
       <!-- ═══ ZONA RECEPTION ══════════════════════════════════════════════════ -->
-      <a-box position="9 0.2 -2"     width="5"   height="1.4" depth="1.2" color="#e8e8e8" material="metalness:0.2; roughness:0.4"></a-box>
-      <a-box position="9 0.87 -2"    width="5.1" height="0.08" depth="1.3" color="#cccccc" material="metalness:0.5; roughness:0.2"></a-box>
+      <a-box position="9 0.2 -2"     width="5"   height="1.4" depth="1.2" color="#2a2a2a" material="metalness:0.4; roughness:0.3"></a-box>
+      <a-box position="9 0.87 -2"    width="5.1" height="0.08" depth="1.3" color="#888888" material="metalness:0.7; roughness:0.15"></a-box>
       <a-box position="9 0.0 -1.4"   width="5"   height="1.4" depth="0.04" color="#cc0000" material="emissive:#cc0000; emissiveIntensity:0.2"></a-box>
       <a-entity gltf-model="#desk"       position="9.5 -0.51 -3.5" rotation="0 180 0" scale="1.2 1.2 1.2"></a-entity>
       <a-entity gltf-model="#desk-chair" position="9.5 -0.51 -3.0" rotation="0 180 0" scale="1.0 1.0 1.0"></a-entity>
@@ -241,6 +238,61 @@
           <a-text value="Inserisci qui il tuo testo." align="center" color="#dddddd" width="1.5" position="0 -0.12 0.01" wrap-count="30"></a-text>
         </a-entity>
       </a-entity>
+
+      <!-- Script texture pavimento via canvas -->
+      <script>
+        // Genera texture marmo grigio-beige con venature sottili
+        (function() {
+          const c = document.getElementById('floor-tex');
+          const ctx = c.getContext('2d');
+          const w = 256, h = 256;
+
+          // Base: beige-grigio caldo
+          ctx.fillStyle = '#b8b0a4';
+          ctx.fillRect(0, 0, w, h);
+
+          // Variazione di base con gradiente sottile
+          const grad = ctx.createLinearGradient(0, 0, w, h);
+          grad.addColorStop(0,   'rgba(180,172,162,0.6)');
+          grad.addColorStop(0.5, 'rgba(160,152,144,0.4)');
+          grad.addColorStop(1,   'rgba(175,167,157,0.6)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+
+          // Venature chiare (simula marmo / cemento levigato)
+          ctx.strokeStyle = 'rgba(210,205,198,0.35)';
+          ctx.lineWidth = 0.8;
+          for (let i = 0; i < 18; i++) {
+            ctx.beginPath();
+            const x0 = Math.random() * w;
+            const y0 = Math.random() * h;
+            ctx.moveTo(x0, y0);
+            for (let j = 0; j < 6; j++) {
+              ctx.lineTo(x0 + (Math.random()-0.5)*80, y0 + (Math.random()-0.5)*80);
+            }
+            ctx.stroke();
+          }
+          // Venature scure sottili
+          ctx.strokeStyle = 'rgba(100,95,88,0.12)';
+          ctx.lineWidth = 0.5;
+          for (let i = 0; i < 10; i++) {
+            ctx.beginPath();
+            ctx.moveTo(Math.random()*w, Math.random()*h);
+            ctx.lineTo(Math.random()*w, Math.random()*h);
+            ctx.stroke();
+          }
+
+          // Griglia fughe: linee scure sottili ogni 64px
+          ctx.strokeStyle = 'rgba(80,75,68,0.4)';
+          ctx.lineWidth = 1.2;
+          for (let x = 0; x <= w; x += 64) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+          }
+          for (let y = 0; y <= h; y += 64) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+          }
+        })();
+      </script>
 
       <script>
         window.addEventListener('load', () => {
