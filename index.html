@@ -135,57 +135,56 @@
 
       <!-- Logo AVBO CORSE — parete frontale, centrato, grande -->
       <!-- Cornice viola dietro -->
-      <!-- Logo AVBO CORSE — parete frontale, centrato -->
+      <!-- Logo AVBO CORSE — parete frontale, più grande -->
       <a-plane id="logo-plane"
         position="0 5.5 -13.8"
         rotation="0 0 0"
-        width="5.5" height="3.2"
+        width="9" height="5.5"
         material="src: #logo-img; shader: flat; transparent: true; alphaTest: 0.15; side: double">
       </a-plane>
 
-      <!-- Logo STEM Racing — parete sinistra -->
+      <!-- Logo STEM Racing — parete sinistra, centrato su Z=-3 -->
       <a-plane id="stem-left"
         position="-11.78 5.5 -3"
         rotation="0 90 0"
-        width="5.5" height="2.2"
+        width="7" height="2.8"
         material="src: #stem-img; shader: flat; transparent: true; alphaTest: 0.15; side: double">
       </a-plane>
 
-      <!-- Logo STEM Racing — parete destra -->
+      <!-- Logo STEM Racing — parete destra, centrato su Z=-3 -->
       <a-plane id="stem-right"
         position="11.78 5.5 -3"
         rotation="0 -90 0"
-        width="5.5" height="2.2"
+        width="7" height="2.8"
         material="src: #stem-img; shader: flat; transparent: true; alphaTest: 0.15; side: double">
       </a-plane>
 
       <!-- ═══ RACING PROPS ══════════════════════════════════════════════════════ -->
-      <!-- Trofeo — angolo destro vicino alla scrivania -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/6Xu7mttjodo/model.glb)"      position="10.5 -0.51 -6"  rotation="0 -30 0" scale="0.8 0.8 0.8"></a-entity>
-      <!-- Secondo trofeo più piccolo -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/6Xu7mttjodo/model.glb)"      position="10.8 -0.51 -5"  rotation="0  20 0" scale="0.5 0.5 0.5"></a-entity>
+      <!-- Trofei — angolo destro, Y alzato per modelli Poly Google centrati in 0 -->
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/6Xu7mttjodo/model.glb)" position="10.5 0.5 -6"  rotation="0 -30 0" scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/6Xu7mttjodo/model.glb)" position="10.5 0.5 -4"  rotation="0  20 0" scale="1.0 1.0 1.0"></a-entity>
 
       <!-- Pneumatici impilati — angolo sinistro posteriore -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)"        position="-10 -0.51 -12"  rotation="0 0 0"   scale="1.2 1.2 1.2"></a-entity>
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)"        position="-10 -0.10 -12"  rotation="0 30 0"  scale="1.2 1.2 1.2"></a-entity>
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)"        position="-10  0.31 -12"  rotation="0 15 0"  scale="1.2 1.2 1.2"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)" position="-10 0.5 -12"  rotation="0  0 0" scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)" position="-10 1.5 -12"  rotation="0 30 0" scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/cV6yx0v8Bfy/model.glb)" position="-10 2.5 -12"  rotation="0 15 0" scale="1.5 1.5 1.5"></a-entity>
 
-      <!-- Volante — zona destra davanti, direttamente sul pavimento -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/bIYbhKwE4L0/model.glb)" position="8 0.0 -1" rotation="-20 0 0" scale="0.8 0.8 0.8"></a-entity>
+      <!-- Volante — zona destra davanti -->
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/bIYbhKwE4L0/model.glb)" position="8 0.5 -1" rotation="0 0 0" scale="1.5 1.5 1.5"></a-entity>
 
       <!-- Bandiera a scacchi — angolo destro anteriore -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/FuOkF3WBrx/model.glb)" position="10 -0.51 -1" rotation="0 -45 0" scale="1.5 1.5 1.5"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/FuOkF3WBrx/model.glb)" position="10 -0.51 -1" rotation="0 -45 0" scale="2.0 2.0 2.0"></a-entity>
 
-      <!-- Estintore — vicino all'uscita (parete posteriore) -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/LtrzDvRya9/model.glb)" position="-11 -0.51 3.5" rotation="0  90 0" scale="1.2 1.2 1.2"></a-entity>
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/LtrzDvRya9/model.glb)" position=" 11 -0.51 3.5" rotation="0 -90 0" scale="1.2 1.2 1.2"></a-entity>
+      <!-- Estintore — vicino alle pareti laterali posteriori -->
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/LtrzDvRya9/model.glb)" position="-11 -0.51 3.5" rotation="0  90 0" scale="2.0 2.0 2.0"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/LtrzDvRya9/model.glb)" position=" 11 -0.51 3.5" rotation="0 -90 0" scale="2.0 2.0 2.0"></a-entity>
 
-      <!-- Velocimetro — zona sinistra, direttamente sul pavimento -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/17WlSF6dD-r/model.glb)" position="-7 0.0 -7" rotation="0 45 0" scale="1.0 1.0 1.0"></a-entity>
+      <!-- Velocimetro — zona sinistra -->
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/17WlSF6dD-r/model.glb)" position="-7 0.5 -7" rotation="0 45 0" scale="1.5 1.5 1.5"></a-entity>
 
-      <!-- Barriera racing — decorazione parete frontale laterale -->
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/SCaRjzjzSk/model.glb)" position="-10 -0.51 -13" rotation="0 90 0" scale="1.0 1.0 1.0"></a-entity>
-      <a-entity gltf-model="url(https://cdn.poly.pizza/m/SCaRjzjzSk/model.glb)" position=" 10 -0.51 -13" rotation="0 90 0" scale="1.0 1.0 1.0"></a-entity>
+      <!-- Barriera racing — ai lati della vetrata frontale -->
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/SCaRjzjzSk/model.glb)" position="-10 -0.51 -13" rotation="0 90 0" scale="2.0 2.0 2.0"></a-entity>
+      <a-entity gltf-model="url(https://cdn.poly.pizza/m/SCaRjzjzSk/model.glb)" position=" 10 -0.51 -13" rotation="0 90 0" scale="2.0 2.0 2.0"></a-entity>
 
       <!-- ═══ PIATTAFORMA ROTANTE ══════════════════════════════════════════════ -->
       <a-entity position="0 -0.5 -6" rotate-y="speed: 0.25">
