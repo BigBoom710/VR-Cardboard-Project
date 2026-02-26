@@ -42,13 +42,19 @@
     >
 
       <!-- ═══ ASSETS ══════════════════════════════════════════════════════════ -->
-      <a-assets timeout="10000">
+      <a-assets timeout="120000">
         <canvas id="floor-tex" width="256" height="256"></canvas>
-        <img id="logo-img" src="logo.png"       crossorigin="anonymous">
-        <img id="stem-img" src="stemracing.png" crossorigin="anonymous">
-        <!-- Solo asset locali nel preload — i GLB esterni si caricano inline -->
-        <a-asset-item id="auto" src="macchina_test.glb"></a-asset-item>
+        <a-asset-item id="auto"         src="macchina_test.glb"></a-asset-item>
+        <a-asset-item id="trophy"       src="models/trophy.glb"></a-asset-item>
+        <a-asset-item id="tire"         src="models/tire.glb"></a-asset-item>
+        <a-asset-item id="steering"     src="models/steering.glb"></a-asset-item>
+        <a-asset-item id="extinguisher" src="models/extinguisher.glb"></a-asset-item>
+        <a-asset-item id="speedo"       src="models/speedo.glb"></a-asset-item>
+        <a-asset-item id="spotlight"    src="models/spotlight.glb"></a-asset-item>
       </a-assets>
+      <!-- Loghi fuori da a-assets — non bloccano il preload -->
+      <img id="logo-img" src="logo.png"       crossorigin="anonymous" style="display:none">
+      <img id="stem-img" src="stemracing.png" crossorigin="anonymous" style="display:none">
 
       <!-- ═══ LUCI ════════════════════════════════════════════════════════════
            Niente ambient alto o directional forti — tutto brucia su pareti chiare.
@@ -190,9 +196,23 @@
         </a-entity>
       </a-entity>
 
-      <!-- ═══ SPOT LIGHT 3D SUL SOFFITTO ══════════════════════════════════════
-           Modello spotlight iPoly3D (CC0) — puntato verso la piattaforma
-      ══════════════════════════════════════════════════════════════════════════ -->
+      <!-- ═══ SPOT LIGHT 3D SUL SOFFITTO ══════════════════════════════════════ -->
+      <a-entity gltf-model="#spotlight" position="0 8.8 -6"   rotation="0 0 180"   scale="0.6 0.6 0.6"></a-entity>
+      <a-entity gltf-model="#spotlight" position="-3 8.8 -6"  rotation="15 0 195"  scale="0.5 0.5 0.5"></a-entity>
+      <a-entity gltf-model="#spotlight" position="3 8.8 -6"   rotation="15 0 165"  scale="0.5 0.5 0.5"></a-entity>
+      <a-entity gltf-model="#spotlight" position="-8 8.8 -2"  rotation="30 40 180" scale="0.4 0.4 0.4"></a-entity>
+      <a-entity gltf-model="#spotlight" position="-8 8.8 -5"  rotation="30 40 180" scale="0.4 0.4 0.4"></a-entity>
+
+      <!-- ═══ RACING PROPS ════════════════════════════════════════════════════ -->
+      <a-entity gltf-model="#trophy"       position="10.5 0.5 -7" rotation="0 -30 0" scale="5 5 5"></a-entity>
+      <a-entity gltf-model="#trophy"       position="10.5 0.5 -5" rotation="0  20 0" scale="3 3 3"></a-entity>
+      <a-entity gltf-model="#tire"         position="-10 0.5 -12" rotation="0  0 0"  scale="5 5 5"></a-entity>
+      <a-entity gltf-model="#tire"         position="-10 1.5 -12" rotation="0 30 0"  scale="5 5 5"></a-entity>
+      <a-entity gltf-model="#tire"         position="-10 2.5 -12" rotation="0 15 0"  scale="5 5 5"></a-entity>
+      <a-entity gltf-model="#steering"     position="8 0.5 -1"    rotation="0 0 0"   scale="5 5 5"></a-entity>
+      <a-entity gltf-model="#extinguisher" position="-11 -0.51 3.5" rotation="0  90 0" scale="2.5 2.5 2.5"></a-entity>
+      <a-entity gltf-model="#extinguisher" position=" 11 -0.51 3.5" rotation="0 -90 0" scale="2.5 2.5 2.5"></a-entity>
+      <a-entity gltf-model="#speedo"       position="-7 0.5 -7"   rotation="0 45 0"  scale="5 5 5"></a-entity>
       <!-- Spot centrale sulla macchina -->
         position="0 8.8 -6"
         rotation="0 0 180"
